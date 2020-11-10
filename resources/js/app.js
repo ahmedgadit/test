@@ -6,27 +6,28 @@
 
 require('./bootstrap');
 
-window.Vue = require('vue');
+import Vue from 'vue';
+import App from './App.vue';
+import router from './router';
+import store from './store';
+import Base from './base.js'
+import {mapState, mapGetters} from 'vuex';
 
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
+// name is optional
+Vue.config.productionTip = false;
 
-// const files = require.context('./', true, /\.vue$/i)
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+Vue.mixin(Base);
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-
-const app = new Vue({
-    el: '#app',
-});
+new Vue({
+  router,
+  store,
+  computed: {
+    ...mapState({
+        // authors: state => state.author.authors,
+        // categories: state => state.category.categories,
+        // news_list: state => state.news.news,
+        // subcategories: state => state.subcategory.subcategories
+    }),
+  },
+  render: (h) => h(App),
+}).$mount('#app');
