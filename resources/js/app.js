@@ -12,6 +12,17 @@ import router from './router';
 import store from './store';
 import Base from './base.js'
 import {mapState, mapGetters} from 'vuex';
+import { extend } from 'vee-validate';
+import { validate } from 'vee-validate';
+import {
+    ValidationProvider,
+    ValidationObserver
+} from 'vee-validate/dist/vee-validate.full';
+
+
+Vue.component('ValidationProvider', ValidationProvider);
+Vue.component('ValidationObserver', ValidationObserver);
+
 
 // name is optional
 Vue.config.productionTip = false;

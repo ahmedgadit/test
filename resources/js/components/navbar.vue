@@ -23,7 +23,7 @@
                       </li>
                           <li class="nav-item">
                               <!-- <a class="nav-link" href="">{{ ('Register') }}</a> -->
-                              <a class="nav-link" href="">Register</a>
+                              <router-link class="nav-link" :to="{ name: 'register', params: {} }">Register</router-link>  
 
                           </li>
                       <li class="nav-item dropdown">
