@@ -1,142 +1,65 @@
-import categoryAPI from '../api/user.js'
+import userApi from '../api/user.js'
 
 const state = {
-  categorieslist: [],
-  categories: [],
-  searchCategory: [],
+  app_user: {},
+  user_login: false
 }
 // getters
 const getters = {
-  getcollectionCategory: (state) => {
-    return collection => state.categories.filter((category) => {
-      return collection === category.collection
-    })
-  },
-  getCategoryById: (state) => {
-    return id => state.categories.find((category) => {
-      return category.data_id === +id
-    })
-  },
-  getCategories : (state) => {
-    return state.categorieslist
-  },
+  getUser: (state) => {
+    return  state.app_user
+  }
 }
 // mutations
 const mutations = {
-
-  newCategory: (state, payload) => {
-    state.categories.push(payload);
+  setUser: (state, payload) => {
+    state.app_user = payload,
+    state.user_login = (payload.id > 0  ? true : false)
   },
-
-
-
-  updatedCategory: (state,payload)=>{
-    state.categories.find((index,auth) => {
-      if( index.data_id === payload.data_id){
-        state.categories[auth] = payload;
-      }
-    })
-  },
-
-  deletedCategory: (state, payload)=>{
-    state.categories.splice(payload, 1)
-  },
-
-
-
-
-  setCategory: (state, payload) => {
-    state.categories = payload
-    state.categorieslist = payload
-  },
-
-
-
-  searchCategory: (state, payload) => {
-    payload = payload.toLowerCase()
-    state.searchCategory = []
-    if (payload.length) {
-      state.categories.filter((category) => {
-        if (category.title.toLowerCase().includes(payload)) {
-          state.searchCategory.push(category)
-        }
-      })
-    }
-  },
-
-  livedCategory: (state, payload) => {
-    state.categories.data.filter((category) => {
-      if (category.id.includes(payload)) {
-        category.lived = category.lived + 1
-      }
-    })
-  },
-
-  nonlivedCategory: (state, payload) => {
-    state.categories.data.filter((category) => {
-      if (category.id.includes(payload)) {
-        category.nonliveds = category.nonlived + 1
-      }
-    })
-  },
-
-
+  setlogout: (state, payload) => {
+    state.user_login = false,
+    state.app_user = {}
+  }
 }
 // actions
 const actions = {
-
-
-  createCategory: ({ commit }, data) => {
-    categoryAPI.apicreateCategory(data).then(function (response) {
-      commit('newCategory', response.data.category)
-    })
-
-
+  login: ({commit}, payload) => {
+    return userApi.apiloginUser(payload)
+      .then(function (response) {
+        if(response.data.status == true){
+          commit('setUser', response.data.user)
+          return Promise.resolve(response);
+        }else {
+          return Promise.reject(response);
+        }
+      })
   },
-
-
-  updateCategory: ({ commit }, data) => {
-    categoryAPI.apiupdateCategory(data).then(function (response) {
-      commit('updatedCategory', response.data.category)
-    })
-
+  registerUser: ({commit}, payload) => {
+    return userApi.apisaveUser(payload)
+      .then(function (response) {
+        if(response.data.status == true){
+          commit('setUser', response.data.user)
+          return Promise.resolve(response);
+        }else{
+          return Promise.reject(response);
+        }
+      })
   },
-
-
-  deleteCategory: ({ commit }, data) => {
-    let id = data.data_id;
-    categoryAPI.apideleteCategory(id).then(function (response) {
-      commit('deletedCategory', data.index)
-    })
-
+  userlogin: ({commit}, payload) => {
+    commit('setUser', payload)
   },
-
-  loadCategory: ({ commit }, data) => {
-    categoryAPI.apigetCategories().then(function (response) {
-      commit('setCategory', response.data.categories)
-    })
-
-  },
-
-
-  searchCategory: (context, payload) => {
-    context.commit('searchCategory', payload)
-  },
-
-  livedCategory: (context, payload) => {
-    categoryAPI.apilivedCategory(payload).then(function (response) {
-      context.commit('livedCategory', payload)
-    })
-  },
-
-  nonlivedCategory: (context, payload) => {
-    categoryAPI.apinoliveCategory(payload).then(function (response) {
-      context.commit('nonlivedCategory', payload)
-    })
-  },
-
-
-
+  logout: ({commit}, payload) => {
+    return userApi.apilogoutUser(payload)
+      .then(function (response) {
+        if(response.data.status == true){
+          commit('setlogout', false)
+          return Promise.resolve(response);
+        } else {
+          commit('setlogout', false);
+          return Promise.reject(response);
+        }
+      })
+  }
 }
 export default {
   namespaced: true,

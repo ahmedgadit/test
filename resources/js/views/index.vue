@@ -1,19 +1,10 @@
 <template>
   <div class="flex-center position-ref full-height">
-      @if (Route::has('login'))
           <div class="top-right links">
-              @auth
                   <a href="">Home</a>
-              @else
                   <a href="">Login</a>
-
-                  @if (Route::has('register'))
-                      <a href="">Register</a>
-                  @endif
-              @endauth
+                  <a href="">Register</a>
           </div>
-      @endif
-
       <div class="content">
           <div class="title m-b-md">
               Laravel

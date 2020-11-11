@@ -14,40 +14,73 @@
               </ul>
 
               <!-- Right Side Of Navbar -->
-              <ul class="navbar-nav ml-auto">
-                  <!-- Authentication Links -->
-                      <li class="nav-item">
-                          <!-- <a class="nav-link" href="">{{ ('Login') }}</a> -->
-                          <a class="nav-link" href="">Login</a>
+              <template v-if="isLogin">
+                  <ul class="navbar-nav ml-auto">
+                      <!-- Authentication Links -->
+                          <li class="nav-item dropdown">
+                              <a class="nav-link" href="">home</a>
 
-                      </li>
-                          <li class="nav-item">
-                              <!-- <a class="nav-link" href="">{{ ('Register') }}</a> -->
-                              <router-link class="nav-link" :to="{ name: 'register', params: {} }">Register</router-link>  
-
-                          </li>
-                      <li class="nav-item dropdown">
-                          <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                              <!-- {{ Auth::user()->name }} -->
-                          </a>
-
-                          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href=""
-                                 onclick="event.preventDefault();
-                                               document.getElementById('logout-form').submit();">
-                                  <!-- {{ ('Logout') }} -->
+                              <a id="navbarDropdown"  class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  v-cloak>
+                                  {{ user_data.name }}
                               </a>
 
-                              <form id="logout-form" action="" method="POST" class="d-none">
-                                  <!-- @csrf -->
-                              </form>
-                          </div>
+
+                              <div class="dropdown-menu dropdown-menu-right"  aria-labelledby="navbarDropdown">
+                                  <a class="dropdown-item" href="JavaScript:;"
+                                     @click="logoutUser()">
+                                      <!-- {{ ('Logout') }} --> Logout
+                                  </a>
+
+                                  <!-- <form id="logout-form" action="" method="POST" class="d-none">
+                                  </form> -->
+                              </div>
+                          </li>
+                  </ul>
+              </template>
+              <template v-else>
+                  <ul class="navbar-nav ml-auto">
+                      <li class="nav-item">
+                          <!-- <a class="nav-link" href="">{{ ('Login') }}</a> -->
+                          <router-link class="nav-link" :to="{ name: 'login', params: {} }">Login</router-link>
                       </li>
-              </ul>
+                      <li class="nav-item">
+                          <!-- <a class="nav-link" href="">{{ ('Register') }}</a> -->
+                          <router-link class="nav-link" :to="{ name: 'register', params: {} }">Register</router-link>
+
+                      </li>
+                  </ul>
+              </template>
           </div>
       </div>
   </nav>
 </template>
 <script>
+import { mapGetters, mapState } from 'vuex';
 
+export default{
+    computed: {
+        ...mapState({
+          user_data: state => state.user.app_user,
+          isLogin: state => state.user.user_login
+        }),
+    },
+    methods:{
+        logoutUser(){
+            let temp = this.user_data;
+            this.$store.dispatch('user/logout', temp).then(
+                message => {
+                  console.log(message);
+                  this.successnoti('you are logout successfully');
+                  this.$router.replace('/login');
+                },
+                error => {
+                  if(error.data.status == false){
+                    alert("login failed, invalid email address or password");
+                  }
+                }
+
+          );
+        }
+    }
+}
 </script>

@@ -7,18 +7,14 @@ import Main from '../views/index.vue';
 
 Vue.use(VueRouter);
 
-const routes = [{
-        path: '/',
-        name: 'mainpage',
-        component: Main,
-    },
+const routes = [
     {
         path: '/login',
         name: 'login',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: require('../views/login/login.vue').default,
+        component: require('../views/auth/login.vue').default,
     },
     {
         path: '/register',
@@ -26,10 +22,10 @@ const routes = [{
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: require('../views/login/register.vue').default,
+        component: require('../views/auth/register.vue').default,
     },
     {
-        path: '/home',
+        path: '/',
         name: 'home',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route

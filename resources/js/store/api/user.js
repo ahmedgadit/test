@@ -4,50 +4,24 @@ const host = window.location.host;
 axios.defaults.baseURL = 'http://'+host;
 
 export default {
-
-  apicreateCategory: function (payload) {
+  apiloginUser: function (data) {
     var formData = new FormData();
-    formData.append("data_id", payload.data_id);
-    formData.append("name", payload.name);
-    formData.append("image", payload.file)
-    return axios.post('/Admin/category-create',formData)
+    formData.append( "email", data.email );
+    formData.append( "password", data.password );
+    formData.append( "remember", data.remember_me );
+    return axios.post('/login',formData)
   },
 
-  apiupdateCategory: function (payload) {
+  apisaveUser: function (data) {
     var formData = new FormData();
-    formData.append("data_id", payload.data_id);
-    formData.append("name", payload.name);
-    formData.append("image", payload.file);
-
-    return axios.post('/Admin/category-update',formData)
+    formData.append( "name", data.name );
+    formData.append( "age", data.age );
+    formData.append( "email", data.email );
+    formData.append( "password", data.password );
+    return axios.post('register',formData)
   },
 
-  apideleteCategory: function (payload){
-    var formData = new FormData();
-    formData.append("data_id", payload);
-    return axios.post('/Admin/category-delete',formData)
-  },
-
-  apigetCategories: function () {
-     return axios.get('/categories')
-  },
-
-
-  apilivedProject: function (id){
-    return axios.post('/api/categories/lived-nonlived',{
-      id: id,
-      choice: 'live'
-    })
-  },
-
-  apinonlivedProject: function (id){
-    return axios.post('/api/categories/lived-nonlived',{
-      id: id,
-      choice: 'nonlive'
-    })
-  },
-
-
-
-
+  apilogoutUser: function(data){
+    return axios.post('logout',{data})
+  }
 }

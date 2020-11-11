@@ -11,34 +11,38 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import Base from './base.js'
-import {mapState, mapGetters} from 'vuex';
 import { extend } from 'vee-validate';
 import { validate } from 'vee-validate';
 import {
     ValidationProvider,
     ValidationObserver
 } from 'vee-validate/dist/vee-validate.full';
-
-
+import Notifications from 'vue-notification';
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
-
+Vue.use(Notifications);
 
 // name is optional
 Vue.config.productionTip = false;
 
 Vue.mixin(Base);
 
+
+
 new Vue({
   router,
   store,
+  created(){
+    this.checkIfLogged()
+        .then(response => {
+            console.log(response)
+            let temp =  response ? response : {};
+            this.$store.dispatch('user/userlogin', temp);
+        })
+        .catch(error => console.log(error));
+  },
   computed: {
-    ...mapState({
-        // authors: state => state.author.authors,
-        // categories: state => state.category.categories,
-        // news_list: state => state.news.news,
-        // subcategories: state => state.subcategory.subcategories
-    }),
+
   },
   render: (h) => h(App),
 }).$mount('#app');

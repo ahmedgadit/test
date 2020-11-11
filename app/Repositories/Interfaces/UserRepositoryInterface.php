@@ -8,5 +8,7 @@ interface UserRepositoryInterface
 {
     public function all();
 
+    public function checkEmail($email);
+
     public function saveUser($data);
 }

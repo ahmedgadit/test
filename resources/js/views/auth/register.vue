@@ -26,7 +26,7 @@
                               <label for="name" class="col-md-4 col-form-label text-md-right">{{ ('Age') }}</label>
 
                               <div class="col-md-6">
-                                  <ValidationProvider rules="digits:2|min_value:18" name="age"  tag="div" v-slot="{ errors }">
+                                  <ValidationProvider rules="required|digits:2|min_value:18" name="age"  tag="div" v-slot="{ errors }">
                                       <input v-model="user.age" id="age" type="text" class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" name="age"  autofocus>
                                       <span class="invalid-feedback" role="alert">
                                           <strong>{{ errors[0] }}</strong>
@@ -41,7 +41,7 @@
                               <div class="col-md-6">
                                   <ValidationProvider rules="required|email" name="email"  tag="div" v-slot="{ errors }">
 
-                                      <input v-model="user.email" :class="{'is-invalid':( errors[0] ? true:false)}" id="email" @change="checkEmail()" type="email" class="form-control" name="email"  required autocomplete="email">
+                                      <input v-model="user.email" @blur="checkEmail()" :class="{'is-invalid':( errors[0] ? true:false)}" id="email" @change="checkEmail()" type="email" class="form-control" name="email"  required autocomplete="email">
 
                                       <span class="invalid-feedback" role="alert">
                                           <strong>{{ errors[0]  }}</strong>
@@ -59,7 +59,7 @@
                                       <input v-model="user.password"  :class="{'is-invalid':( errors[0] ? true:false)}" id="password" type="password" class="form-control" name="password" required autocomplete="new-password">
 
                                       <span class="invalid-feedback" role="alert">
-                                          <strong>{{  }}</strong>
+                                          <strong>{{ errors[0]  }}</strong>
                                       </span>
 
                                   </ValidationProvider>
@@ -71,11 +71,11 @@
                               <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ ('Confirm Password') }}</label>
 
                               <div class="col-md-6">
-                                  <ValidationProvider rules="required|confirmed:password" name="c_password"  tag="div" v-slot="{ errors }">
-                                      <input v-model="user.c_password" id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                                  <ValidationProvider rules="required|confirmed:password" name="confirm password"  tag="div" v-slot="{ errors }">
+                                      <input v-model="cpassword" id="password-confirm" type="password" class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" name="password_confirmation" required autocomplete="new-password">
 
                                       <span class="invalid-feedback" role="alert">
-                                          <strong>{{  }}</strong>
+                                          <strong>{{ errors[0]  }}</strong>
                                       </span>
                                   </ValidationProvider>
 
@@ -108,53 +108,53 @@ export default{
             email: '',
             age: '',
             password: '',
-            cpassword: '',
-            login: false,
-          }
-        }
+         },
+         cpassword: '',
+       }
     },
     methods: {
         registerUser(){
-            this.$store.dispatch('products/createOrder', {
-                    product: this.cart,
-                    userDetail: this.user,
-                    amt: this.cartTotal
-                  }).then(
-                        message => {
-                          console.log(message);
-                          if(message.data.task == true){
-                            this.$store.dispatch('cart/clearCart', []);
-                            this.$router.replace({ path: '/page/order-success', params: { order: message.data.order  } })
-                          } else {
-                            alert(message.data.message);
-                          }
-                        },
-                        error => {
-                          if(error.data.task == false){
-                            alert("order submission failed");
-                          }
-                        }
+            console.log('asdsa');
+            let temp = this.user;
+            this.$store.dispatch('user/registerUser', temp).then(
+                message => {
+                  console.log(message);
+                  this.successnoti('you are Registered Successfully');
+                  this.$router.replace('/');
+                },
+                error => {
+                  if(error.data.status == false){
+                      this.errornoti('Error 404, Registered failed, please try again');
+                    alert("login failed, invalid email address or password");
+                  }
+                }
 
-                  );
+          );
+        },
+
+        onSubmit(){
+
         },
         checkEmail() {
             console.log(this.$refs);
-            if(this.$refs.form.fields.email.failed == false){
-                axios.get('http://catchtechnology.com/lawyer/reg/lawyer-check-user-email', { email: this.user.email }).then((response) => {
-                    // Notice that we return an object containing both a valid property and a data property.
-                     var temp = {
-                        valid: response.data.status,
-                        data: {
-                            message: response.data.message
-                        }
-                    };
-                    if(temp.valid){
-                        this.$refs.form.setErrors({
-                            email: ['This email is already taken']
-                        });
+            var el = this;
+            axios.get('check-user-email?email='+el.user.email).then((response) => {
+                // Notice that we return an object containing both a valid property and a data property.
+                 var temp = {
+                    valid: response.data.status,
+                    data: {
+                        message: response.data.message
                     }
-                });
-            }
+                };
+                console.log(temp.valid);
+                if(temp.valid == true){
+                    this.$refs.form.fields.email.failed = true
+                    this.warnnoti('This email is already taken');
+                    this.$refs.form.setErrors({
+                        email: ['This email is already taken']
+                    });
+                }
+            });
           console.log('Form has been submitted!')
           // this.$store.dispatch('products/createOrder', {
           //   product: this.cart,
