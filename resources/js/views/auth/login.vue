@@ -52,9 +52,9 @@
                                       <button type="submit" :disabled="invalid" @click="loginUser()" class="btn btn-primary">
                                       {{ ('Login') }}
                                   </button>
-                                  <a class="btn btn-link" href="">
+                                  <!-- <a class="btn btn-link" href="">
                                       {{ ('Forgot Your Password?') }}
-                                  </a>
+                                  </a> -->
                               </div>
                           </div>
                       </form>
@@ -82,14 +82,12 @@ export default{
            let temp = this.user;
            this.$store.dispatch('user/login', temp).then(
                message => {
-                 console.log(message);
                  this.successnoti('you are login Successfully');
                  this.$router.replace('/');
                },
                error => {
-                 if(error.data.status == false){
-                   alert("login failed, invalid email address or password");
-                 }
+                   console.log(error)
+                   this.errornoti('Email and password do not match our record');
                }
 
          );

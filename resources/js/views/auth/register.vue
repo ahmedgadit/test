@@ -23,13 +23,48 @@
                           </div>
 
                           <div class="form-group row">
-                              <label for="name" class="col-md-4 col-form-label text-md-right">{{ ('Age') }}</label>
+                              <label for="name" class="col-md-4 col-form-label text-md-right">{{ ('Date of birth') }}</label>
 
-                              <div class="col-md-6">
-                                  <ValidationProvider rules="required|digits:2|min_value:18" name="age"  tag="div" v-slot="{ errors }">
-                                      <input v-model="user.age" id="age" type="text" class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" name="age"  autofocus>
+
+                              <div class="col-md-2">
+                                  <ValidationProvider rules="required" name="day"  tag="div" v-slot="{ errors }">
+                                      <select v-model="user.day" name="months" class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" @change="updateBday()">
+                                            <option v-for="mn in days" :value="mn">{{mn}}</option>
+                                      </select>
                                       <span class="invalid-feedback" role="alert">
                                           <strong>{{ errors[0] }}</strong>
+                                      </span>
+                                  </ValidationProvider>
+                              </div>
+                              <div class="col-md-2">
+                                  <ValidationProvider rules="required" name="month"  tag="div" v-slot="{ errors }">
+                                      <select v-model="user.month" name="month" class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" @change="updateBday()">
+                                            <option v-for="(mn, index) in months" :value="index + 1">{{mn}}</option>
+                                      </select>
+                                      <span class="invalid-feedback" role="alert">
+                                          <strong>{{ errors[0] }}</strong>
+                                      </span>
+                                  </ValidationProvider>
+                              </div>
+                              <div class="col-md-2">
+                                  <ValidationProvider rules="required" name="day"  tag="div" v-slot="{ errors }">
+                                      <select v-model="user.year" name="years" class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" @change="updateBday()">
+                                            <option v-for="yr in years" :value="yr">{{yr}}</option>
+                                      </select>
+                                      <span class="invalid-feedback" role="alert">
+                                          <strong>{{ errors[0] }}</strong>
+                                      </span>
+                                  </ValidationProvider>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-md-4">
+                              </div>
+                              <div class="col-md-6">
+                                  <ValidationProvider rules="required|min_value:18" name="age"  v-slot="{ errors }">
+                                      <input v-model="user.age" id="age" type="text" hidden class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" name="age"  autofocus>
+                                      <span class="invalid-feedback" role="alert">
+                                          <strong>{{ $refs.form.errors.age.length > 0 ?'Your Age must be greater or equal to 18':'' }}</strong>
                                       </span>
                                   </ValidationProvider>
                               </div>
@@ -98,27 +133,77 @@
   </div>
 </template>
 <script>
+import { extend } from 'vee-validate';
 
-
+extend('min_value', {
+  validate(value) {
+    return value >= 18;
+  },
+  message: 'Your {_field_} must be greater or equal to 18'
+});
 export default{
     data() {
         return {
           user: {
             name: '',
             email: '',
+            month:'',
+            day:'',
+            year:'',
             age: '',
             password: '',
          },
+         months:[
+             'jan',
+             'feb',
+             'mar',
+             'apr',
+             'may',
+             'jun',
+             'jul',
+             'aug',
+             'sept',
+             'oct',
+             'nov',
+             'dec',
+         ],
          cpassword: '',
        }
     },
+    computed: {
+        days () {
+            var array = [],
+            j = 0;
+            for(var i = 1; i <= 31; i++){
+                array[j] = i;
+                j++;
+            }
+            return array;
+        },
+        years () {
+          const year = new Date().getFullYear()
+          return Array.from({length: year - 1900}, (value, index) => 1901 + index).reverse();
+        }
+    },
     methods: {
+        updateBday(){
+            let day = this.user.day;
+            let mon = this.user.month + 1;
+            let yer = this.user.year;
+            let today = new Date();
+            var ageDifMs = today.getFullYear() - this.user.year;
+            this.user.age = ageDifMs;
+            if(this.user.age < 18){
+                this.$refs.form.fields.age.failed = true
+                this.$refs.form.setErrors({
+                    age: ['Age must be greater than or equal to 18']
+                });
+            }
+        },
         registerUser(){
-            console.log('asdsa');
             let temp = this.user;
             this.$store.dispatch('user/registerUser', temp).then(
                 message => {
-                  console.log(message);
                   this.successnoti('you are Registered Successfully');
                   this.$router.replace('/');
                 },
@@ -136,7 +221,6 @@ export default{
 
         },
         checkEmail() {
-            console.log(this.$refs);
             var el = this;
             axios.get('check-user-email?email='+el.user.email).then((response) => {
                 // Notice that we return an object containing both a valid property and a data property.
@@ -146,7 +230,6 @@ export default{
                         message: response.data.message
                     }
                 };
-                console.log(temp.valid);
                 if(temp.valid == true){
                     this.$refs.form.fields.email.failed = true
                     this.warnnoti('This email is already taken');
@@ -155,12 +238,6 @@ export default{
                     });
                 }
             });
-          console.log('Form has been submitted!')
-          // this.$store.dispatch('products/createOrder', {
-          //   product: this.cart,
-          //   userDetail: this.user,
-          //   amt: this.cartTotal
-          // })
         }
     }
 }

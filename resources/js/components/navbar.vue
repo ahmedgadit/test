@@ -26,6 +26,9 @@
 
 
                               <div class="dropdown-menu dropdown-menu-right"  aria-labelledby="navbarDropdown">
+                                  <router-link class="dropdown-item" :to="{ name: 'setting', params: {} }">Settings</router-link>
+                                  <router-link class="dropdown-item" :to="{ name: 'password', params: {} }">Change Password</router-link>
+
                                   <a class="dropdown-item" href="JavaScript:;"
                                      @click="logoutUser()">
                                       <!-- {{ ('Logout') }} --> Logout

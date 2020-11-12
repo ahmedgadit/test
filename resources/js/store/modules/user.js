@@ -32,6 +32,8 @@ const actions = {
         }else {
           return Promise.reject(response);
         }
+      }).catch(function(error){
+        return Promise.reject(error);
       })
   },
   registerUser: ({commit}, payload) => {
@@ -45,6 +47,18 @@ const actions = {
         }
       })
   },
+  updateUser: ({commit}, payload) => {
+    return userApi.apiupdateUser(payload)
+      .then(function (response) {
+        if(response.data.status == true){
+          commit('setUser', response.data.user)
+          return Promise.resolve(response);
+        }else{
+          return Promise.reject(response);
+        }
+      })
+  },
+
   userlogin: ({commit}, payload) => {
     commit('setUser', payload)
   },

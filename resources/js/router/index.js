@@ -32,54 +32,22 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: require('../views/home/index.vue').default,
     },
-    // {
-    //     path: '/news/:news',
-    //     name: 'Newsdetail',
-    //     // route level code-splitting
-    //     // this generates a separate chunk (about.[hash].js) for this route
-    //     // which is lazy-loaded when the route is visited.
-    //     component: require('./../views/newsdetail/index.vue').default,
-    // },
-    // {
-    //     path: '/:category',
-    //     name: 'Category',
-    //     // route level code-splitting
-    //     // this generates a separate chunk (about.[hash].js) for this route
-    //     // which is lazy-loaded when the route is visited.
-    //     component: require('./../views/category/index.vue').default,
-    // },
-    // {
-    //     path: '/:category/:subcategory',
-    //     name: 'Subcategory',
-    //     // route level code-splitting
-    //     // this generates a separate chunk (about.[hash].js) for this route
-    //     // which is lazy-loaded when the route is visited.
-    //     component: require('./../views/subcategory/index.vue').default,
-    // },
-    // {
-    //     path: '/contact',
-    //     name: 'Contact',
-    //     // route level code-splitting
-    //     // this generates a separate chunk (about.[hash].js) for this route
-    //     // which is lazy-loaded when the route is visited.
-    //     component: require('./../views/contact/index.vue').default,
-    // },
-    // {
-    //     path: '/about',
-    //     name: 'About',
-    //     // route level code-splitting
-    //     // this generates a separate chunk (about.[hash].js) for this route
-    //     // which is lazy-loaded when the route is visited.
-    //     component: require('./../views/About.vue').default,
-    // },
-    // {
-    //     path: '/contact-us',
-    //     name: 'contact',
-    //     // route level code-splitting
-    //     // this generates a separate chunk (about.[hash].js) for this route
-    //     // which is lazy-loaded when the route is visited.
-    //     component: require('./../views/Contact.vue').default,
-    // },
+    {
+        path: '/setting',
+        name: 'setting',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: require('../views/profile/detail.vue').default,
+    },
+    {
+        path: '/password',
+        name: 'password',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: require('../views/profile/changepassword.vue').default,
+    },
 ];
 
 const router = new VueRouter({

@@ -23,13 +23,50 @@
                           </div>
 
                           <div class="form-group row">
-                              <label for="name" class="col-md-4 col-form-label text-md-right">{{ ('Age') }}</label>
+                              <label for="name" class="col-md-4 col-form-label text-md-right">{{ ('Date of birth') }}</label>
 
-                              <div class="col-md-6">
-                                  <ValidationProvider rules="required|digits:2|min_value:18" name="age"  tag="div" v-slot="{ errors }">
-                                      <input v-model="user.age" id="age" type="text" class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" name="age"  autofocus>
+
+                              <div class="col-md-2">
+                                  <ValidationProvider rules="required" name="day"  tag="div" v-slot="{ errors }">
+                                      <select v-model="user.day" name="months" class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" @change="updateBday()">
+                                            <option v-for="mn in days" :value="mn">{{mn}}</option>
+                                      </select>
                                       <span class="invalid-feedback" role="alert">
                                           <strong>{{ errors[0] }}</strong>
+                                      </span>
+                                  </ValidationProvider>
+                              </div>
+                              <div class="col-md-2">
+                                  <ValidationProvider rules="required" name="month"  tag="div" v-slot="{ errors }">
+                                      <select v-model="user.month" name="month" class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" @change="updateBday()">
+                                            <option v-for="(moon, index) in months" :value="index + 1">{{moon}}</option>
+                                      </select>
+                                      <span class="invalid-feedback" role="alert">
+                                          <strong>{{ errors[0] }}</strong>
+                                      </span>
+                                  </ValidationProvider>
+                              </div>
+                              <div class="col-md-2">
+                                  <ValidationProvider rules="required" name="day"  tag="div" v-slot="{ errors }">
+                                      <select v-model="user.year" name="years" class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" @change="updateBday()">
+                                            <option v-for="yr in years" :value="yr">{{yr}}</option>
+                                      </select>
+                                      <span class="invalid-feedback" role="alert">
+                                          <strong>{{ errors[0] }}</strong>
+                                      </span>
+                                  </ValidationProvider>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-md-4">
+                              </div>
+                              <div class="col-md-6">
+                                  <ValidationProvider rules="required|min_value:18" name="age"  v-slot="{ errors }">
+                                      <input v-model="user.age" id="age" type="text" hidden class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" name="age"  autofocus>
+                                      <span class="invalid-feedback" role="alert">
+                                          <template v-if="$refs.form.errors != undefined  && $refs.form.errors != undefined && $refs.form.errors.age != undefined ">
+                                              <strong >{{ $refs.form.errors.age.length > 0 ?'Your Age must be greater or equal to 18':'' }}</strong>
+                                          </template>
                                       </span>
                                   </ValidationProvider>
                               </div>
@@ -76,8 +113,25 @@ export default{
           user: {
             name: '',
             email: '',
+            day:'',
+            month:'',
+            year:'',
             age: '',
          },
+         months:[
+             'jan',
+             'feb',
+             'mar',
+             'apr',
+             'may',
+             'jun',
+             'jul',
+             'aug',
+             'sept',
+             'oct',
+             'nov',
+             'dec',
+         ],
        }
     },
     computed: {
@@ -85,24 +139,57 @@ export default{
           user_data: state => state.user.app_user,
           isLogin: state => state.user.user_login
         }),
+        days () {
+            var array = [],
+            j = 0;
+            for(var i = 1; i <= 31; i++){
+                array[j] = i;
+                j++;
+            }
+            return array;
+        },
+        years () {
+          const year = new Date().getFullYear()
+          return Array.from({length: year - 1900}, (value, index) => 1901 + index).reverse();
+        }
     },
     mounted(){
-        this.user.name = this.user_data.name;
-        this.user.email = this.user_data.email;
-        this.user.age = this.user_data.age;
-    }
+        setTimeout(() => {
+            var bday = new Date(this.user_data.dob);
+            this.user.name = this.user_data.name;
+            this.user.email = this.user_data.email;
+            this.user.month = bday.getUTCMonth() +1;
+            this.user.day = bday.getUTCDate();
+            this.user.year = bday.getUTCFullYear();
+            this.user.age = this.user_data.age;
+        }, 1000)
+    },
     methods: {
+        updateBday(){
+            let day = this.user.day;
+            let mon = this.user.month;
+            let yer = this.user.year;
+            let today = new Date();
+            var ageDifMs = today.getFullYear() - this.user.year;
+            this.user.age = ageDifMs;
+            if(this.user.age < 18){
+                this.$refs.form.fields.age.failed = true
+                this.$refs.form.setErrors({
+                    age: ['Age must be greater than or equal to 18']
+                });
+            }
+        },
         updateUser(){
             console.log('asdsa');
             let temp = this.user;
             this.$store.dispatch('user/updateUser', temp).then(
                 message => {
                   console.log(message);
-                  this.$router.replace('/home');
+                  this.successnoti('your settings saved Successfully');
                 },
                 error => {
                   if(error.data.status == false){
-                    alert("login failed, invalid email address or password");
+                      this.errornoti('Error 404, changes failed, please try again');
                   }
                 }
 

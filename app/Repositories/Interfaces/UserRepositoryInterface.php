@@ -11,4 +11,9 @@ interface UserRepositoryInterface
     public function checkEmail($email);
 
     public function saveUser($data);
+
+    public function updateUser($data);
+
+    public function updatePassword($data);
+
 }

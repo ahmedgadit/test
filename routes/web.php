@@ -23,4 +23,10 @@ Route::get('/check-user-email','Auth\RegisterController@checkEmail');
 
 Auth::routes();
 
+Route::get('/check-user-oldpassword','UserController@checkPassword');
+
+Route::post('/updateUser','UserController@updateUser');
+Route::post('/change-password','UserController@changePassword');
+
+
 Route::get('/{view?}',  'HomeController@index')->name('home');

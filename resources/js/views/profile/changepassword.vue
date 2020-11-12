@@ -13,8 +13,8 @@
                               <label for="password" class="col-md-4 col-form-label text-md-right">{{ ('Old Password') }}</label>
 
                               <div class="col-md-6">
-                                  <ValidationProvider rules="required|min:6" name="password"  tag="div" v-slot="{ errors }">
-                                      <input v-model="user.password"  :class="{'is-invalid':( errors[0] ? true:false)}" id="password" type="password" class="form-control" name="password" required autocomplete="new-password">
+                                  <ValidationProvider rules="required" name="oldpassword"  tag="div" v-slot="{ errors }">
+                                      <input v-model="user.oldpassword" @blur="checkPassword()" :class="{'is-invalid':( errors[0] ? true:false)}"  @change="checkPassword()" id="password" type="password" class="form-control" name="password" required autocomplete="new-password">
 
                                       <span class="invalid-feedback" role="alert">
                                           <strong>{{ errors[0]  }}</strong>
@@ -46,7 +46,7 @@
 
                               <div class="col-md-6">
                                   <ValidationProvider rules="required|confirmed:password" name="confirm password"  tag="div" v-slot="{ errors }">
-                                      <input v-model="cpassword" id="password-confirm" type="password" class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" name="password_confirmation" required autocomplete="new-password">
+                                      <input v-model="user.cpassword" id="password-confirm" type="password" class="form-control" :class="{'is-invalid':( errors[0] ? true:false)}" name="password_confirmation" required autocomplete="new-password">
 
                                       <span class="invalid-feedback" role="alert">
                                           <strong>{{ errors[0]  }}</strong>
@@ -58,7 +58,7 @@
 
                           <div class="form-group row mb-0">
                               <div class="col-md-6 offset-md-4">
-                                  <button type="submit" :disabled="invalid" class="btn btn-primary"  @click="updateUser()">
+                                  <button type="submit" :disabled="invalid" class="btn btn-primary"  @click="updateUserPass()">
                                       {{ ('Password Change') }}
                                   </button>
                               </div>
@@ -79,12 +79,10 @@ export default{
     data() {
         return {
           user: {
-            name: '',
-            email: '',
-            age: '',
-            password: '',
+              password: '',
+              oldpassword: '',
+              cpassword: '',
          },
-         cpassword: '',
        }
     },
     computed: {
@@ -94,35 +92,37 @@ export default{
         }),
     },
     mounted(){
-        this.user.name = this.user_data.name;
-        this.user.email = this.user_data.email;
-        this.user.age = this.user_data.age;
-    }
+    },
     methods: {
-        updateUser(){
-            console.log('asdsa');
-            let temp = this.user;
-            this.$store.dispatch('user/updateUser', temp).then(
-                message => {
-                  console.log(message);
-                  this.$router.replace('/home');
-                },
-                error => {
-                  if(error.data.status == false){
-                    alert("login failed, invalid email address or password");
-                  }
-                }
+        updateUserPass(){
+            axios.post('change-password',{'password':this.user.password}).then((response) => {
+                // Notice that we return an object containing both a valid property and a data property.
+                if(response.data.status == true){
+                    this.successnoti('your password changed Successfully');
+                    let temp = this.user_data;
+                    this.$store.dispatch('user/logout', temp).then(
+                        message => {
+                          console.log(message);
+                          this.successnoti('you are logout successfully');
+                          this.$router.replace('/login');
+                        },
+                        error => {
+                          if(error.data.status == false){
+                            alert("login failed, invalid email address or password");
+                          }
+                        }
 
-          );
+                    );
+                }
+            });
         },
 
         onSubmit(){
 
         },
-        checkEmail() {
-            console.log(this.$refs);
+        checkPassword() {
             var el = this;
-            axios.get('check-user-email?email='+el.user.email).then((response) => {
+            axios.get('check-user-oldpassword?password='+el.user.oldpassword).then((response) => {
                 // Notice that we return an object containing both a valid property and a data property.
                  var temp = {
                     valid: response.data.status,
@@ -130,20 +130,14 @@ export default{
                         message: response.data.message
                     }
                 };
-                console.log(temp.valid);
-                if(temp.valid == true){
-                    this.$refs.form.fields.email.failed = true
+                if(temp.valid == false){
+                    this.$refs.form.fields.oldpassword.failed = true
                     this.$refs.form.setErrors({
-                        email: ['This email is already taken']
+                        oldpassword: ['old password does not match']
                     });
                 }
             });
-          console.log('Form has been submitted!')
-          // this.$store.dispatch('products/createOrder', {
-          //   product: this.cart,
-          //   userDetail: this.user,
-          //   amt: this.cartTotal
-          // })
+
         }
     }
 }
