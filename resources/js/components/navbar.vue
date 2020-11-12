@@ -18,7 +18,7 @@
                   <ul class="navbar-nav ml-auto">
                       <!-- Authentication Links -->
                           <li class="nav-item dropdown">
-                              <a class="nav-link" href="">home</a>
+                              <router-link class="nav-link" :to="{ name: 'home', params: {} }">home</router-link>
 
                               <a id="navbarDropdown"  class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  v-cloak>
                                   {{ user_data.name }}
@@ -28,7 +28,7 @@
                               <div class="dropdown-menu dropdown-menu-right"  aria-labelledby="navbarDropdown">
                                   <router-link class="dropdown-item" :to="{ name: 'setting', params: {} }">Settings</router-link>
                                   <router-link class="dropdown-item" :to="{ name: 'password', params: {} }">Change Password</router-link>
-
+                                  <router-link class="dropdown-item" :to="{ name: 'logs', params: {} }">Logs</router-link>
                                   <a class="dropdown-item" href="JavaScript:;"
                                      @click="logoutUser()">
                                       <!-- {{ ('Logout') }} --> Logout
@@ -72,7 +72,6 @@ export default{
             let temp = this.user_data;
             this.$store.dispatch('user/logout', temp).then(
                 message => {
-                  console.log(message);
                   this.successnoti('you are logout successfully');
                   this.$router.replace('/login');
                 },

@@ -208,10 +208,7 @@ export default{
                   this.$router.replace('/');
                 },
                 error => {
-                  if(error.data.status == false){
-                      this.errornoti('Error 404, Registered failed, please try again');
-                    alert("login failed, invalid email address or password");
-                  }
+                  this.errornoti(error);
                 }
 
           );
@@ -237,6 +234,8 @@ export default{
                         email: ['This email is already taken']
                     });
                 }
+            }).catch((error) => {
+                this.errornoti(error);
             });
         }
     }

@@ -102,14 +102,11 @@ export default{
                     let temp = this.user_data;
                     this.$store.dispatch('user/logout', temp).then(
                         message => {
-                          console.log(message);
                           this.successnoti('you are logout successfully');
                           this.$router.replace('/login');
                         },
                         error => {
-                          if(error.data.status == false){
-                            alert("login failed, invalid email address or password");
-                          }
+                            this.errornoti(error);
                         }
 
                     );

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\JsonResponse;
+use App\Repositories\Interfaces\LogActivityRepositoryInterface;
 use Illuminate\Http\Request;
 
 class LoginController extends Controller
@@ -35,9 +36,10 @@ class LoginController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(LogActivityRepositoryInterface $logRepository)
     {
         $this->middleware('guest')->except('logout');
+        $this->logRepository = $logRepository;
     }
 
     public function sendLoginResponse(Request $request)
@@ -50,13 +52,25 @@ class LoginController extends Controller
             return $response;
         }
         $user = $this->guard()->user();
-        return $request->wantsJson()
-                    ? new JsonResponse(['user'=>$user,'status'=>true], 201)
-                    : redirect()->intended($this->redirectPath());
+
+        $this->logRepository->saveLogActivity('user login');
+        if(isset($user)){
+            return $request->wantsJson()
+                        ? new JsonResponse(['user'=>$user,'status'=>true], 201)
+                        : redirect()->intended($this->redirectPath());
+        }else{
+            return $request->wantsJson()
+                        ? new JsonResponse(['message'=>'login failed please try again','status'=>true], 201)
+                        : redirect()->intended($this->redirectPath());
+        }
+
     }
 
     public function logout(Request $request)
     {
+
+        $this->logRepository->saveLogActivity('user logout');
+
         $this->guard()->logout();
 
         $request->session()->invalidate();

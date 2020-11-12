@@ -78,7 +78,7 @@
                               <div class="col-md-6">
                                   <ValidationProvider rules="required|email" name="email"  tag="div" v-slot="{ errors }">
 
-                                      <input v-model="user.email" disabled @blur="checkEmail()" :class="{'is-invalid':( errors[0] ? true:false)}" id="email" @change="checkEmail()" type="email" class="form-control" name="email"  required autocomplete="email">
+                                      <input v-model="user.email" disabled  :class="{'is-invalid':( errors[0] ? true:false)}" id="email"  type="email" class="form-control" name="email"  required autocomplete="email">
 
                                       <span class="invalid-feedback" role="alert">
                                           <strong>{{ errors[0]  }}</strong>
@@ -180,17 +180,13 @@ export default{
             }
         },
         updateUser(){
-            console.log('asdsa');
             let temp = this.user;
             this.$store.dispatch('user/updateUser', temp).then(
                 message => {
-                  console.log(message);
                   this.successnoti('your settings saved Successfully');
                 },
                 error => {
-                  if(error.data.status == false){
-                      this.errornoti('Error 404, changes failed, please try again');
-                  }
+                  this.errornoti(error);
                 }
 
           );
@@ -199,32 +195,6 @@ export default{
         onSubmit(){
 
         },
-        checkEmail() {
-            console.log(this.$refs);
-            var el = this;
-            axios.get('check-user-email?email='+el.user.email).then((response) => {
-                // Notice that we return an object containing both a valid property and a data property.
-                 var temp = {
-                    valid: response.data.status,
-                    data: {
-                        message: response.data.message
-                    }
-                };
-                console.log(temp.valid);
-                if(temp.valid == true){
-                    this.$refs.form.fields.email.failed = true
-                    this.$refs.form.setErrors({
-                        email: ['This email is already taken']
-                    });
-                }
-            });
-          console.log('Form has been submitted!')
-          // this.$store.dispatch('products/createOrder', {
-          //   product: this.cart,
-          //   userDetail: this.user,
-          //   amt: this.cartTotal
-          // })
-        }
     }
 }
 </script>

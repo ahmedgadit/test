@@ -30,7 +30,7 @@ const actions = {
           commit('setUser', response.data.user)
           return Promise.resolve(response);
         }else {
-          return Promise.reject(response);
+          return Promise.reject(response.data.message);
         }
       }).catch(function(error){
         return Promise.reject(error);
@@ -43,8 +43,10 @@ const actions = {
           commit('setUser', response.data.user)
           return Promise.resolve(response);
         }else{
-          return Promise.reject(response);
+          return Promise.reject(response.data.message);
         }
+      }).catch(function(error){
+        return Promise.reject(error);
       })
   },
   updateUser: ({commit}, payload) => {
@@ -54,8 +56,10 @@ const actions = {
           commit('setUser', response.data.user)
           return Promise.resolve(response);
         }else{
-          return Promise.reject(response);
+          return Promise.reject(response.data.message);
         }
+      }).catch(function(error){
+        return Promise.reject(error);
       })
   },
 
@@ -70,8 +74,10 @@ const actions = {
           return Promise.resolve(response);
         } else {
           commit('setlogout', false);
-          return Promise.reject(response);
+          return Promise.reject(response.data.message);
         }
+      }).catch(function(error){
+        return Promise.reject(error);
       })
   }
 }

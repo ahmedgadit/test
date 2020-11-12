@@ -35,11 +35,12 @@ new Vue({
   created(){
     this.checkIfLogged()
         .then(response => {
-            console.log(response)
             let temp =  response ? response : {};
             this.$store.dispatch('user/userlogin', temp);
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            // console.log(error)
+        });
   },
   computed: {
 

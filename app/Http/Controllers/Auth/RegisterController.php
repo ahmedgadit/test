@@ -10,8 +10,10 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\Interfaces\LogActivityRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Helpers\Logger;
 
 
 
@@ -42,10 +44,11 @@ class RegisterController extends Controller
      *
      * @return void
      */
-    public function __construct(UserRepositoryInterface $userRepository)
+    public function __construct(UserRepositoryInterface $userRepository, LogActivityRepositoryInterface $logRepository)
     {
         $this->middleware('guest');
         $this->userRepository = $userRepository;
+        $this->logRepository = $logRepository;
 
     }
 
@@ -108,6 +111,8 @@ class RegisterController extends Controller
         if ($response = $this->registered($request, $user)) {
             return $response;
         }
+
+        $this->logRepository->saveLogActivity('newly user registered');
 
         return $request->wantsJson()
                     ? new JsonResponse(['user'=>$user,'status'=>true], 201)

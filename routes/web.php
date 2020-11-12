@@ -27,6 +27,7 @@ Route::get('/check-user-oldpassword','UserController@checkPassword');
 
 Route::post('/updateUser','UserController@updateUser');
 Route::post('/change-password','UserController@changePassword');
+Route::get('/getlogs',  'UserController@getlogs');
 
 
 Route::get('/{view?}',  'HomeController@index')->name('home');

@@ -86,8 +86,7 @@ export default{
                  this.$router.replace('/');
                },
                error => {
-                   console.log(error)
-                   this.errornoti('Email and password do not match our record');
+                   this.errornoti(error);
                }
 
          );

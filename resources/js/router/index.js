@@ -48,6 +48,14 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: require('../views/profile/changepassword.vue').default,
     },
+    {
+        path: '/logs',
+        name: 'logs',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: require('../views/profile/log.vue').default,
+    },
 ];
 
 const router = new VueRouter({
